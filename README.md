@@ -92,6 +92,13 @@ Ring handler:
     (ilshad.layout/layout request content myapp/layout-template)))
 ```
 
+## TODO
+
+- full Hiccup support
+- other ways, independent from template engine
+- allow to define multiple layout and switch between them
+- ?
+
 ## License
 
 Copyright © 2013 [Ilshad Khabibullin](http://ilshad.com).
