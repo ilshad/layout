@@ -68,20 +68,21 @@ and `layout.html` is your "base" template:
 ```
 
 Your Ring handlers can return Ring response, or just body, as usual and
-Compose Them With Compojure. Body Can be strings with some HTML, or
+compose them with Compojure. Body can be strings with some HTML, or
 `enlive-html/html-snippet` output. The middleware will wrap this response
 into your layout template.
 
 ### Preventing layout wrapping
 
-Some routes must not be wrapped into layout template. For this, you
+Some responses must not be wrapped into layout template. For this, you
 can add `:layout` keyword with value `false` into your handler's response,
-or just wrap the handler into `prevent-layout`. See example `defroutes`
-code below.
+or just wrap the handler into `ilshad.layout/prevent-layout`. See example
+`defroutes` code below.
 
 ### Layout without middleware
 
-Alternatively, `layout` function can be used explicit with Ring handler:
+Alternatively, `ilshad.layout/layout` function can be used explicit with
+Ring handler:
 
 ```clojure
 (defn my-ring-handler
@@ -89,6 +90,7 @@ Alternatively, `layout` function can be used explicit with Ring handler:
   (let [content (; ... things here
         )]
     (ilshad.layout/layout request content myapp/layout-template)))
+```
 
 ## License
 
