@@ -1,7 +1,6 @@
 # Layout
 
-Ring middleware that allows developer to specify base layout template
-for entire web application.
+Ring middleware that allows developer to specify base HTML template.
 
 ## Installation
 
@@ -20,24 +19,32 @@ Leiningen coordinates:
 Define `wrap-layout` middleware with your layout template:
 
 ```clojure
+(require '[compojure.core :refer [defroutes]])
+(require '[ilshad.layout :refer [wrap-layout
+                                 prevent-layout]])
+
 (defroutes routes
   ; ... assemble routes ...
   
   ; some routes must not be wrapped into layout
-  (ilshad.layout/prevent-layout (files "/static" {:root "resources/static"}))
+  (prevent-layout (files "/static" {:root "resources/static"}))
+  
+  ; etc
   (not-found "<h1>Not Found</h1>"))
 
 (def app
   (-> routes
-      (ilshad.layout/wrap-layout myapp/layout-template)
-      ; ... other middlewares
-	  (compojure.handler/site ...)))
+      (wrap-layout myapp/layout-template)
+
+	  ; ... other middlewares
+	  ))
 ```
 
 where `myapp/layout-template` is your function (in particular,
 build with `enlive-html/deftemplate`) taking two arguments. First
 argument is Ring request. Second argument is `content` - data structure
-like produced from `enlive-html/html-snippet`. Something like this:
+like produced from `enlive-html/html-snippet`. Actually, `content` is
+response from your handlers. Something like this:
 
 ```clojure
 (require '[net.cgrand.enlive-html :as html))
@@ -50,7 +57,7 @@ like produced from `enlive-html/html-snippet`. Something like this:
   [:#main] (html/content content))
 ```
 
-and `layout.html` is your "base" template:
+and `layout.html` is your base template:
 
 ```html
 <!doctype html>
@@ -69,37 +76,41 @@ and `layout.html` is your "base" template:
 </html>
 ```
 
-Your Ring handlers can return Ring response, or just body, as usual and
-compose them with Compojure. Body can be strings with some HTML, or
-`enlive-html/html-snippet` output. The middleware will wrap this response
-into your layout template.
+Your Ring handlers return Ring response with body, or just body, as usual.
+The body is:
+
+* string containing HTML
+* `enlive-html/html-snippet` output
+
+The middleware will wrap this response into your layout template.
 
 ### Preventing layout wrapping
 
 Some responses must not be wrapped into layout template. For this, you
 can add `:layout` keyword with value `false` into your handler's response,
-or just wrap the handler into `ilshad.layout/prevent-layout`. See example
-`defroutes` code below.
+or utilize convenient function `ilshad.layout/prevent-layout`. See example
+`defroutes` code above.
 
 ### Layout without middleware
 
-Alternatively, `ilshad.layout/layout` function can be used explicit with
-Ring handler:
+Alternatively, `ilshad.layout/layout` function can be used explicitly
+with Ring handler:
 
 ```clojure
+(require '[ilshad.layout :refer [layout]])
+
 (defn my-ring-handler
   [request]
   (let [content (; ... things here
         )]
-    (ilshad.layout/layout request content myapp/layout-template)))
+    (layout request content myapp/layout-template)))
 ```
 
 ## TODO
 
-- full Hiccup support
-- other ways, independent from template engine
-- allow to define multiple layout and switch between them
-- ?
+- Hiccup support
+- independent from template engine
+- allow to define multiple named layouts
 
 ## License
 
