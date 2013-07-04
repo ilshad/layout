@@ -26,7 +26,7 @@
 
 (defn layout
   [req resp template]
-  (if (= false (:layout resp))
+  (if (false? (:layout resp))
     resp
     (-> resp
         (layout-include req template)
