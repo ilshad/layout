@@ -70,7 +70,7 @@ The middleware will wrap this response into your layout template.
 ### Preventing layout wrapping
 
 Some responses must not be wrapped into layout template. For this, you
-can add `:layout` keyword with value `false` into your handler's response,
+have add `:layout` keyword with value `nil` into your handler's response,
 or utilize convenient function `ilshad.layout/prevent-layout`. See example
 `defroutes` code above.
 

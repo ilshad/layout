@@ -26,7 +26,8 @@
 
 (defn layout
   [req resp template]
-  (if (false? (:layout resp))
+  (if (and (contains? resp :layout)
+           (nil? (:layout resp)))
     resp
     (-> resp
         (layout-include req template)
@@ -41,4 +42,4 @@
 (defn prevent-layout
   [handler]
   (fn [req]
-    (assoc (handler req) :layout false)))
+    (assoc (handler req) :layout nil)))
