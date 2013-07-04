@@ -40,6 +40,8 @@ argument is Ring request. Second argument is `content` - data structure
 like produced from `enlive-html/html-snippet`. Something like this:
 
 ```clojure
+(require '[enlive-html :as html))
+
 (html/deftemplate layout-template "layout.html"
   [request content]
   [:title] (html/content (myapp/build-title request))
