@@ -42,7 +42,7 @@ like produced from `enlive-html/html-snippet`. Something like this:
 ```clojure
 (html/deftemplate layout-template "layout.html"
   [request content]
-  [:title] (html-content (myapp/build-title request))
+  [:title] (html/content (myapp/build-title request))
   [:#menu] (html/content (myapp/build-menu request))
   [:#flash] (html/content (:flash request))
   [:#main] (html/content content))
