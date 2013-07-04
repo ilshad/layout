@@ -30,7 +30,7 @@ Define `wrap-layout` middleware with your layout template:
   (prevent-layout (files "/static" {:root "resources/static"}))
   
   ; etc
-  (not-found "<h1>Not Found</h1>"))
+  )
 
 (def app
   (-> routes
