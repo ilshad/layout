@@ -52,36 +52,18 @@ response from your handlers. Something like this:
 
 (html/deftemplate layout-template "layout.html"
   [request content]
-  [:title] (html/content (myapp/build-title request))
+
+  ; cmpose response from handlers with base template
+  [:#main] (html/content content)
+
   [:#menu] (html/content (myapp/build-menu request))
-  [:#flash] (html/content (:flash request))
-  [:#main] (html/content content))
+  [:#flash] (html/content (:flash request)))
 ```
 
-and `layout.html` is your base template:
-
-```html
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" type="text/css" href="/static/css/screen.css" />
-    <title></title>
-  </head>
-  <body>
-    <div id="container">
-      <div id="menu"></div>
-      <div id="flash"></div>
-      <div id="main"></div>
-  </body>
-</html>
-```
-
-Your Ring handlers return Ring response with body, or just body, as usual.
-The body is:
+Your Ring handlers return Ring response with body, or just body. The body is:
 
 * string containing HTML
-* `enlive-html/html-snippet` output
+* or `enlive-html/html-snippet` output
 
 The middleware will wrap this response into your layout template.
 
