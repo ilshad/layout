@@ -20,6 +20,7 @@ Define `wrap-layout` middleware with your layout template:
 
 ```clojure
 (require '[compojure.core :refer [defroutes]])
+(require '[compojure.route :refer [files]])
 (require '[ilshad.layout :refer [wrap-layout
                                  prevent-layout]])
 
