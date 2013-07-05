@@ -7,7 +7,7 @@ Ring middleware that allows developer to specify base HTML template.
 Leiningen coordinates:
 
 ```clojure
-[com.ilshad/layout "x.x.x"]
+[ilshad/layout "x.x.x"]
 ```
 
 !NOTE: yet not released.
