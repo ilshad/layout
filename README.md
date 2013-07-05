@@ -45,7 +45,8 @@ where `myapp/layout-template` is your function (in particular,
 build with `enlive-html/deftemplate`) taking two arguments. First
 argument is Ring request. Second argument is `content` - data structure
 like produced from `enlive-html/html-snippet`. Actually, `content` is
-response from your handlers. Something like this:
+response from your handlers in html snippet view. This function should
+return string or sequence of strings. Something like this:
 
 ```clojure
 (require '[net.cgrand.enlive-html :as html))
@@ -53,7 +54,7 @@ response from your handlers. Something like this:
 (html/deftemplate layout-template "layout.html"
   [request content]
 
-  ; cmpose response from handlers with base template
+  ; compose response from handlers with base template
   [:#main] (html/content content)
 
   [:#menu] (html/content (myapp/build-menu request))
@@ -67,7 +68,7 @@ Your Ring handlers return Ring response with body, or just body. The body is:
 
 The middleware will wrap this response into your layout template.
 
-### Preventing layout wrapping
+### Preventing layout
 
 Some responses must not be wrapped into layout template. For this, you
 have add `:layout` keyword with value `nil` into your handler's response,

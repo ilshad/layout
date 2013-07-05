@@ -24,10 +24,16 @@
     (assoc resp :body (template req (cont (:body resp))))
     (template req (cont resp))))
 
+(defn- prevent-layout?
+  [resp]
+  ; complex detect nil value because TODO multilple named layouts
+  (and (map? resp)
+       (contains? resp :layout)
+       (nil? (:layout resp))))
+
 (defn layout
   [req resp template]
-  (if (and (contains? resp :layout)
-           (nil? (:layout resp)))
+  (if (prevent-layout? resp)
     resp
     (-> resp
         (layout-include req template)
