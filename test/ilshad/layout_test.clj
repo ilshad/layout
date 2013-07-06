@@ -20,13 +20,33 @@
 (html/deftemplate template-1
   "template.html"
   [req content]
-  [:article] (html/content content))
+  [:#main] (html/content content))
 
-(deftest test-layout-deftemplate-string
-  (let [resp (layout (request :get "/") "bar" template-1)]
+(html/defsnippet snippet-1
+  "template.html"
+  [:#snippet-1]
+  [])
+
+(deftest test-layout-deftemplate-body-string
+  (let [resp (layout (request :get "/")
+                     "bar"
+                     template-1)]
     (is (= (:status resp) 200))
     (is (= (:headers resp) {"Content-Type" "text/html; charset=utf-8"}))
     (is (= (:body resp) '("<html>" "\n  " "<body>" "\n    "
-                          "<header>Title</header>" "\n    "
-                          "<article>" "bar" "</article>" "\n  "
+                          "<h1>Title\n    </h1>"
+                          "<div id=\"main\">" "bar" "</div>" "\n  "
+                          "</body>" "\n\n" "</html>")))))
+
+(deftest test-layout-deftemplate-body-snippet
+  (let [resp (layout (request :get "/")
+                     (snippet-1)
+                     template-1)]
+    (is (= (:status resp) 200))
+    (is (= (:headers resp) {"Content-Type" "text/html; charset=utf-8"}))
+    (is (= (:body resp) '("<html>" "\n  " "<body>" "\n    "
+                          "<h1>Title\n    </h1>"
+                          "<div id=\"main\">"
+                          "<div id=\"snippet-1\">foo</div>"
+                          "</div>" "\n  "
                           "</body>" "\n\n" "</html>")))))
