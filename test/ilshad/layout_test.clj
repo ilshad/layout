@@ -29,7 +29,7 @@
 
 (deftest test-layout-deftemplate-body-string
   (let [resp (layout (request :get "/")
-                     "foo"
+                     "<em>foo</em>"
                      template-1)]
     (is (= (:status resp) 200))
     (is (= (:headers resp) {"Content-Type" "text/html; charset=utf-8"}))
@@ -53,7 +53,7 @@
 
 (deftest test-layout-deftemplate-response-string
   (let [resp (layout (request :get "/")
-                     (response "foo")
+                     (response "<em>foo</em>")
                      template-1)]
     (is (= (:status resp) 200))
     (is (= (:headers resp) {}))
