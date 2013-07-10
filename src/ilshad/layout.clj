@@ -19,10 +19,10 @@
     c))
 
 (defn- layout-include
-  [resp req template]
+  [resp req template params]
   (if (response? resp)
-    (assoc resp :body (template req (cont (:body resp))))
-    (template req (cont resp))))
+    (assoc resp :body (template req (cont (:body resp)) params))
+    (template req (cont resp) params)))
 
 (defn- prevent-layout?
   [resp]
@@ -32,18 +32,24 @@
        (nil? (:layout resp))))
 
 (defn layout
-  [req resp template]
+  [req resp template params]
   (if (prevent-layout? resp)
     resp
     (-> resp
-        (layout-include req template)
+        (layout-include req template params)
         (render req)
         (update-response-after-flash req))))
 
 (defn wrap-layout
-  [handler template]
-  (fn [req]
-    (layout req (handler req) template)))
+  [handler spec]
+  (let [spec (if (map? spec) spec {:default spec})]
+    (fn [req]
+      (let [resp (handler req)
+            params (:layout resp {})]
+        (layout req
+                resp
+                (spec (:name params) :default)
+                (dissoc params :name))))))
 
 (defn prevent-layout
   [handler]
