@@ -75,22 +75,7 @@ have add `:layout` keyword with value `nil` into your handler's response,
 or utilize convenient function `ilshad.layout/prevent-layout`. See example
 `defroutes` code above.
 
-FIXME: :layout {:prevnet true}
-
-### Layout without middleware
-
-Alternatively, `ilshad.layout/layout` function can be used explicitly
-with Ring handler:
-
-```clojure
-(require '[ilshad.layout :refer [layout]])
-
-(defn my-ring-handler
-  [request]
-  (let [content (; ... things here
-        )]
-    (layout request content myapp/layout-template)))
-```
+!FIXME: :layout {:prevent true}
 
 ## TODO
 
