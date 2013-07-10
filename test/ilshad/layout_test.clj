@@ -15,12 +15,12 @@
            {:status 200
             :headers {}
             :body "foo"
-            :layout nil}))))
+            :layout {:prevent true}}))))
 
 (html/deftemplate template-1
   "template.html"
-  [req content & {:keys [mode]}]
-  [:#main] (case mode
+  [req content params]
+  [:#main] (case (:mode params)
              :enlive-snippet (html/content content)
              :html-string (html/html-content content)
              (html/content content)))
@@ -41,29 +41,4 @@
                           "<div id=\"main\">"
                           "<div id=\"snippet-1\">foo</div>"
                           "</div>" "\n  "
-                          "</body>" "\n\n" "</html>")))))
-
-(deftest test-layout-default-deftemplate-response-snippet
-  (let [resp (layout (request :get "/")
-                     (response (snippet-1))
-                     template-1)]
-    (is (= (:status resp) 200))
-    (is (= (:headers resp) {}))
-    (is (= (:body resp) '("<html>" "\n  " "<body>" "\n    "
-                          "<h1>Title\n    </h1>"
-                          "<div id=\"main\">"
-                          "<div id=\"snippet-1\">foo</div>"
-                          "</div>" "\n  "
-                          "</body>" "\n\n" "</html>")))))
-
-(deftest test-layout-default-deftemplate-response-html
-  (let [resp (layout (request :get "/")
-                     (-> (response "<em>foo</em>")
-                         (assoc :layout {:mode :html}))
-                     template-1)]
-    (is (= (:status resp) 200))
-    (is (= (:headers resp) {}))
-    (is (= (:body resp) '("<html>" "\n  " "<body>" "\n    "
-                          "<h1>Title\n    </h1>"
-                          "<div id=\"main\">" "<em>foo</em>" "</div>" "\n  "
                           "</body>" "\n\n" "</html>")))))
