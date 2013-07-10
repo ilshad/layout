@@ -18,7 +18,7 @@
     (template req resp params)))
 
 (defn layout
-  [req resp template params]
+  [req resp template & params]
   (-> resp
       (layout-include req template params)
       (render req)
@@ -32,9 +32,14 @@
     (fn [req]
       (let [resp (handler req)
             params (:layout resp)]
-        (if (:prevent params)
+        (if (true? (:prevent params))
           resp
           (layout req
                   resp
                   (spec (:name params :default))
                   params))))))
+
+(defn prevent-layout
+  [handler]
+  (fn [req]
+    (assoc (handler req) :layout {:prevent true})))
