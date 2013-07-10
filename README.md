@@ -75,6 +75,8 @@ have add `:layout` keyword with value `nil` into your handler's response,
 or utilize convenient function `ilshad.layout/prevent-layout`. See example
 `defroutes` code above.
 
+FIXME: :layout {:prevnet true}
+
 ### Layout without middleware
 
 Alternatively, `ilshad.layout/layout` function can be used explicitly
