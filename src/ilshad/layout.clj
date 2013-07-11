@@ -19,7 +19,7 @@
       resp)))
 
 (defn layout
-  [req resp template & params]
+  [req resp template & [params]]
   (-> (if (response? resp)
         (assoc resp :body (template req (:body resp) params))
         (template req resp params))
