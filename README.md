@@ -32,14 +32,19 @@ where `layout-template` is your function (for example, build with
 
 ```clojure
 (require '[net.cgrand.enlive-html :as html))
+
 (html/deftemplate layout-template "layout.html"
   [request content params]
+
   ; compose response from handlers with base template
   [:#main] (if (string? content)
              (html/html-content content)
              (html/content content))
+
   [:#menu] (html/content (myapp/build-menu request))
   [:#flash] (html/content (:flash request)))
+  
+  ; using custom layot params
   [:title] (:title params "Cool site")
 ```
 
@@ -50,7 +55,8 @@ This function is taking 3 arguments:
 - map of custom params you might want to pass into the layout
 template. They are under key `:layout` in Ring handler's response.
 
-For example, how to add `title` layout param form Ring handler:
+Say we want to add `title` layout param form Ring handler and
+pass it into layout template:
 
 ```clojure
 (defn frontpage
@@ -62,25 +68,21 @@ For example, how to add `title` layout param form Ring handler:
 ```
 
 Any custom params (under `:layout`) will be passed into your layout
-template function. Notice, there is reserved keys in the params -
-`:template` which is used for named templates, and `:prevent` to
-prevent layout, see below.
+template function. Notice, there is 2 reserved keys in the params -
+`:template` and `:prevent`, see below.
 
 ## Named layout templates
 
-You can define multiple layout templates with the middleware and
-then select it by passing templates' name into layout params form
-custom handler. There are 2 rules:
+You can define multiple layout templates with middleware and then select
+them by passing their's names into response (under `:layout` map). There
+are 2 rules:
 
 - names are keywords;
-- `:default` template is used by default (if you do not pass `:template`
-layout param from handler).
+- `:default` template is used by default.
 
-In example below, we define 2 base templates: `:default` and `:admin`:
+Let's define 2 base templates: `:default` and `:admin`:
 
 ```clojure
-(require '[ilshad.layout :refer [wrap-layout]])
-; ... define your compojure routes here
 (def app
   (-> app*
       ; ... some middlewares
@@ -90,7 +92,7 @@ In example below, we define 2 base templates: `:default` and `:admin`:
 	  ))
 ```
 
-And in handler, let's say we call this with admin layout:
+In handler, let's call this with admin layout:
 
 ```clojure
 (defn admin-page
@@ -106,7 +108,7 @@ And in handler, let's say we call this with admin layout:
 Some handlers must be called without wrapping their response's body
 into layout. There are 2 options how to do this:
 
-- pass `:prevent true` into layout params from ring handler:
+- pass `:prevent true` from ring handler:
 
 ```clojure
 (defn ajax-view
@@ -117,12 +119,9 @@ into layout. There are 2 options how to do this:
    :layout {:prevent true}})
 ```
 
-- or define patterns for URI with middleware. This is `:prevent` with
-vector of regexps:
+- or define patterns for URI in middleware (regexp):
 
 ```clojure
-(require '[ilshad.layout :refer [wrap-layout]])
-; ... define your compojure routes here
 (def app
   (-> app*
       ; ... some middlewares
@@ -139,8 +138,8 @@ Middleware `wrap-template` can be used with:
 - symbol argument (sole default template)
 - or map argument to define multiple templates and prevent-layout patterns.
 
-Handlers can specify `:layout` slot in Ring response with map. This
-map can contain:
+Handlers can pass `:layout` slot into response with map. This map can
+contain:
 
 - `:template` with name of template (also keyword) instead of default.
 - `:prevent` with value `true`

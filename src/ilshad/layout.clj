@@ -10,7 +10,6 @@
       #((complement nil?) (match %)))))
 
 (defn- update-response-after-flash
-  "Force setting session to clean up flash."
   [resp req]
   (if (:session resp)
     resp
