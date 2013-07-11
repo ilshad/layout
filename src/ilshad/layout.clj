@@ -2,7 +2,7 @@
   (:require [ring.util.response :refer [response?]]
             [compojure.response :refer [render]]))
 
-(defn create-predicate--prevent?
+(defn- create-predicate--prevent?
   [patterns]
   (if (empty? patterns)
     (fn [_] false)
@@ -34,7 +34,7 @@
       (let [resp (handler req)
             params (:layout resp)]
         (if (or (true? (:prevent params))
-                (prevent? req))
+                (prevent? (:uri req)))
           resp
           (layout req
                   resp
