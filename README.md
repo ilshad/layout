@@ -28,7 +28,7 @@ Define `wrap-layout` middleware for your Ring application:
 ```
 
 where `layout-template` is your function (for example, build with
-`enlive-html/deftemplate`). For example:
+`enlive-html/deftemplate`):
 
 ```clojure
 (require '[net.cgrand.enlive-html :as html))
@@ -36,11 +36,14 @@ where `layout-template` is your function (for example, build with
 (html/deftemplate layout-template "layout.html"
   [request content params]
 
-  ; compose response from handlers with base template
+  ; Compose response from handlers with base template.
+  ; Some handler will return string with html, otheres handlers
+  ; will return data structure from enlive's html-snippet.
   [:#main] (if (string? content)
              (html/html-content content)
              (html/content content))
 
+  ; Other things
   [:#menu] (html/content (myapp/build-menu request))
   [:#flash] (html/content (:flash request)))
   
@@ -52,9 +55,9 @@ This function is taking 3 arguments:
 
 - Ring request,
 - Response's body from your Ring handler,
-- map of custom params you might want to pass into the layout template.
+- map of _custom params_ you might want to pass into the layout template.
 
-Custom params are created with key `:layout` in Ring handler's response.
+_Custom params_ are created with key `:layout` in Ring handler's response.
 Say we want to add `title` param:
 
 ```clojure
@@ -79,7 +82,7 @@ are 2 rules:
 - names are keywords;
 - `:default` template is used by default.
 
-Let's define 2 base templates: `:default` and `:admin`:
+Let's define 2 layout templates: `:default` and `:admin`:
 
 ```clojure
 (def app
@@ -91,7 +94,7 @@ Let's define 2 base templates: `:default` and `:admin`:
 	  ))
 ```
 
-In handler, let's call this with admin layout:
+In handler, let's do response with admin layout:
 
 ```clojure
 (defn admin-page
@@ -104,10 +107,10 @@ In handler, let's call this with admin layout:
 
 ## Prevent layout
 
-Some handlers must be called without wrapping their response's body
+Some handlers _must_ be called without wrapping their response's body
 into layout. There are 2 options how to do this:
 
-- pass `:prevent true` from ring handler:
+- pass `:prevent true` from handler:
 
 ```clojure
 (defn ajax-handler
@@ -134,15 +137,15 @@ into layout. There are 2 options how to do this:
 
 Middleware `wrap-template` can be used with:
 
-- symbol argument (sole default template)
-- or map argument to define multiple templates and prevent-layout patterns.
+- symbol argument (sole default template);
+- or map argument (multiple templates and prevent-layout patterns).
 
 Handlers can pass `:layout` slot into response with map. This map can
 contain:
 
-- `:template` with name of template (also keyword) instead of default.
-- `:prevent` with value `true`
-- arbitrary fields to pass into layout template.
+- `:template` with name of template (also keyword);
+- `:prevent` with value `true`;
+- arbitrary fields (custom params) to pass them into layout template.
 
 ## License
 
