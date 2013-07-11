@@ -44,7 +44,7 @@ where `layout-template` is your function (for example, build with
   [:#menu] (html/content (myapp/build-menu request))
   [:#flash] (html/content (:flash request)))
   
-  ; using custom layot params
+  ; using custom layout params
   [:title] (:title params "Cool site")
 ```
 
@@ -52,11 +52,10 @@ This function is taking 3 arguments:
 
 - Ring request,
 - Response's body from your Ring handler,
-- map of custom params you might want to pass into the layout
-template. They are under key `:layout` in Ring handler's response.
+- map of custom params you might want to pass into the layout template.
 
-Say we want to add `title` layout param form Ring handler and
-pass it into layout template:
+Custom params are created with key `:layout` in Ring handler's response.
+Say we want to add `title` param:
 
 ```clojure
 (defn frontpage
@@ -111,7 +110,7 @@ into layout. There are 2 options how to do this:
 - pass `:prevent true` from ring handler:
 
 ```clojure
-(defn ajax-view
+(defn ajax-handler
   [req]
   {:status 200
    :headers {}
