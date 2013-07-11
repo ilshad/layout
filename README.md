@@ -37,8 +37,8 @@ where `layout-template` is your function (for example, build with
   [request content params]
 
   ; Compose response from handlers with base template.
-  ; Some handler will return string with html, otheres handlers
-  ; will return data structure from enlive's html-snippet.
+  ; Some handler will return string with html, whereas other
+  ; handlers will return data structure from enlive's html-snippet.
   [:#main] (if (string? content)
              (html/html-content content)
              (html/content content))
@@ -48,16 +48,19 @@ where `layout-template` is your function (for example, build with
   [:#flash] (html/content (:flash request)))
   
   ; using custom layout params
-  [:title] (:title params "Cool site")
+  [:title] (:title params "Default Title")
 ```
 
 This function is taking 3 arguments:
 
 - Ring request,
 - Response's body from your Ring handler,
-- map of _custom params_ you might want to pass into the layout template.
+- map of _custom params_ you might want to pass into the layout template,
+see below.
 
-_Custom params_ are created with key `:layout` in Ring handler's response.
+## Custom params
+
+Custom params are created with key `:layout` in Ring handler's response.
 Say we want to add `title` param:
 
 ```clojure
