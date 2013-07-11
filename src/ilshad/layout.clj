@@ -2,6 +2,13 @@
   (:require [ring.util.response :refer [response?]]
             [compojure.response :refer [render]]))
 
+(defn create-predicate--prevent?
+  [patterns]
+  (if (empty? patterns)
+    (fn [_] false)
+    (let [match (apply some-fn (map #(partial re-find %) patterns))]
+      #((complement nil?) (match %)))))
+
 (defn- update-response-after-flash
   "Force setting session to clean up flash."
   [resp req]
@@ -11,35 +18,25 @@
       (assoc resp :session (:session req))
       resp)))
 
-(defn- layout-include
-  [resp req template params]
-  (if (response? resp)
-    (assoc resp :body (template req (:body resp) params))
-    (template req resp params)))
-
 (defn layout
   [req resp template & params]
-  (-> resp
-      (layout-include req template params)
+  (-> (if (response? resp)
+        (assoc resp :body (template req (:body resp) params))
+        (template req resp params))
       (render req)
       (update-response-after-flash req)))
 
 (defn wrap-layout
   [handler spec]
-  (let [spec (if (map? spec)
-               spec
-               {:default spec})]
+  (let [templates (:templates spec {:default spec})
+        prevent? (create-predicate--prevent? (:prevent spec))]
     (fn [req]
       (let [resp (handler req)
             params (:layout resp)]
-        (if (true? (:prevent params))
+        (if (or (true? (:prevent params))
+                (prevent? req))
           resp
           (layout req
                   resp
-                  (spec (:name params :default))
+                  (templates (:template params :default))
                   params))))))
-
-(defn prevent-layout
-  [handler]
-  (fn [req]
-    (assoc (handler req) :layout {:prevent true})))
