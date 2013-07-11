@@ -12,76 +12,139 @@ Leiningen coordinates:
 
 !NOTE: yet not released.
 
-## Usage
+## Simplest option
 
-### Ring middleware
-
-Define `wrap-layout` middleware with your layout template:
+Define `wrap-layout` middleware for your Ring application:
 
 ```clojure
-(require '[compojure.core :refer [defroutes]])
-(require '[compojure.route :refer [files]])
-(require '[ilshad.layout :refer [wrap-layout
-                                 prevent-layout]])
-
-(defroutes routes
-  ; ... assemble routes ...
-  
-  ; some routes must not be wrapped into layout
-  (prevent-layout (files "/static" {:root "resources/static"}))
-  
-  ; etc
-  )
-
+(require '[ilshad.layout :refer [wrap-layout]])
+; ... define your compojure routes here
 (def app
-  (-> routes
-      (wrap-layout myapp/layout-template)
-
+  (-> app*
+      ; ... some middlewares
+      (wrap-layout layout-template)
 	  ; ... other middlewares
 	  ))
 ```
 
-where `myapp/layout-template` is your function (in particular,
-build with `enlive-html/deftemplate`) taking two arguments. First
-argument is Ring request. Second argument is `content` - data structure
-like produced from `enlive-html/html-snippet`. Actually, `content` is
-response from your handlers in html snippet view. This function should
-return string or sequence of strings. Something like this:
+where `layout-template` is your function (for example, build with
+`enlive-html/deftemplate`). For example:
 
 ```clojure
 (require '[net.cgrand.enlive-html :as html))
-
 (html/deftemplate layout-template "layout.html"
-  [request content]
-
+  [request content params]
   ; compose response from handlers with base template
-  [:#main] (html/content content)
-
+  [:#main] (if (string? content)
+             (html/html-content content)
+             (html/content content))
   [:#menu] (html/content (myapp/build-menu request))
   [:#flash] (html/content (:flash request)))
+  [:title] (:title params "Cool site")
 ```
 
-Your Ring handlers return Ring response with body, or just body. The body is:
+This function is taking 3 arguments:
 
-* string containing HTML
-* or `enlive-html/html-snippet` output
+- Ring request,
+- Response's body from your Ring handler,
+- map of custom params you might want to pass into the layout
+template. They are under key `:layout` in Ring handler's response.
 
-The middleware will wrap this response into your layout template.
+For example, how to add `title` layout param form Ring handler:
 
-### Preventing layout
+```clojure
+(defn frontpage
+  [req]
+  {:status 200
+   :headers {}
+   :body "<h1>This is front page</h1>"
+   :layout {:title "Welcome!"}})
+```
 
-Some responses must not be wrapped into layout template. For this, you
-have add `:layout` keyword with value `nil` into your handler's response,
-or utilize convenient function `ilshad.layout/prevent-layout`. See example
-`defroutes` code above.
+Any custom params (under `:layout`) will be passed into your layout
+template function. Notice, there is reserved keys in the params -
+`:template` which is used for named templates, and `:prevent` to
+prevent layout, see below.
 
-!FIXME: :layout {:prevent true}
+## Named layout templates
 
-## TODO
+You can define multiple layout templates with the middleware and
+then select it by passing templates' name into layout params form
+custom handler. There are 2 rules:
 
-- Hiccup support
-- independent from template engine
-- allow to define multiple named layouts
+- names are keywords;
+- `:default` template is used by default (if you do not pass `:template`
+layout param from handler).
+
+In example below, we define 2 base templates: `:default` and `:admin`:
+
+```clojure
+(require '[ilshad.layout :refer [wrap-layout]])
+; ... define your compojure routes here
+(def app
+  (-> app*
+      ; ... some middlewares
+      (wrap-layout {:templates {:default layout-template-1
+	                            :admin layout-template-2}})
+	  ; ... other middlewares
+	  ))
+```
+
+And in handler, let's say we call this with admin layout:
+
+```clojure
+(defn admin-page
+  [req]
+  {:status 200
+   :headers {}
+   :body "<h1>Admin console</h1>"
+   :layout {:template :admin}})
+```
+
+## Prevent layout
+
+Some handlers must be called without wrapping their response's body
+into layout. There are 2 options how to do this:
+
+- pass `:prevent true` into layout params from ring handler:
+
+```clojure
+(defn ajax-view
+  [req]
+  {:status 200
+   :headers {}
+   :body "foo bar baaz"
+   :layout {:prevent true}})
+```
+
+- or define patterns for URI with middleware. This is `:prevent` with
+vector of regexps:
+
+```clojure
+(require '[ilshad.layout :refer [wrap-layout]])
+; ... define your compojure routes here
+(def app
+  (-> app*
+      ; ... some middlewares
+      (wrap-layout {:prevent [#"^/static" #"^/api"]
+                    :templates {:default layout-template}})
+	  ; ... other middlewares
+	  ))
+```
+
+## Summary
+
+Middleware `wrap-template` can be used with:
+
+- symbol argument (sole default template)
+- or map argument to define multiple templates and prevent-layout patterns.
+
+Handlers can specify `:layout` slot in Ring response with map. This
+map can contain:
+
+- `:template` with name of template (also keyword) instead of default.
+- `:prevent` with value `true`
+- arbitrary fields to pass into layout template.
 
 ## License
 
