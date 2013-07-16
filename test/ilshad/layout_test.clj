@@ -1,9 +1,11 @@
 (ns ilshad.layout-test
-  (:require [ilshad.layout :refer [layout wrap-layout]]
-            [ring.util.response :refer [response]]
+  (:require [ring.util.response :refer [response]]
             [ring.mock.request :refer [request]]
+            [ring.adapter.jetty :refer [run-jetty]]
             [net.cgrand.enlive-html :as html]
-            [clojure.test :refer [deftest is are]]))
+            [clojure.test :refer [deftest is are]]
+            [ilshad.layout :refer [layout wrap-layout]]
+            [ilshad.layout-test.mock-app-1 :as mock-app-1]))
 
 (html/deftemplate template-1
   "template.html"
@@ -43,3 +45,17 @@
                           "<" "h1" ">" "Foo" "</" "h1" ">"
                           "</div>" "\n  "
                           "</body>" "\n\n" "</html>")))))
+
+;; funcitonal tests
+(declare test-port)
+
+(defn run-test-app
+  [app f]
+  (let [server (run-jetty app {:port 0 :join? false})
+        port (-> server .getConnectors first .getLocalPort)]
+    (def test-port port)  ;; would use with-redefs, but can't test on 1.2
+    (reset! missles-fired? false)
+    (try
+      (f)
+      (finally
+        (.stop server)))))
