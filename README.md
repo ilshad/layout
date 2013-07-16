@@ -154,6 +154,7 @@ Compojure, Hiccup, etc, what how you like.
 (defn welcome-handler []
   (hiccup.core/html
     [:em "bar"]))
+```
 
 ## Summary
 
