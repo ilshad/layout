@@ -136,6 +136,24 @@ into layout. There are 2 options how to do this:
 	  ))
 ```
 
+## Hiccup example
+
+Hiccup is just working well:
+
+```clojure
+(defn layout-template
+  [request content params]
+  (hiccup.page/html5
+   [:head
+    [:title "Foo"]]
+   [:body
+    [:h1 "Foo"]
+    [:div#main content]]))
+
+(defn welcome-handler []
+  (hiccup.core/html
+    [:em "bar"]))
+
 ## Summary
 
 Middleware `wrap-template` can be used with:
