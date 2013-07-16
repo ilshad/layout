@@ -138,7 +138,8 @@ into layout. There are 2 options how to do this:
 
 ## Hiccup example
 
-Hiccup is just working well:
+Hiccup is just working well, both on layout or handler site. Compose
+Compojure, Hiccup, etc, what how you like.
 
 ```clojure
 (defn layout-template
