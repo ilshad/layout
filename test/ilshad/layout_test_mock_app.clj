@@ -1,4 +1,4 @@
-(ns ilshad.layout-test.mock-app-1
+(ns ilshad.layout-test-mock-app
   (:require [ilshad.layout :refer [wrap-layout]]
             [compojure.core :refer [defroutes GET]]
             [compojure.handler :refer [site]]
@@ -21,6 +21,8 @@
 (defroutes app*
   (GET "/" _ (snippet-1))
   (not-found "<h1>Not found</h1>"))
+
+(def missles-fired? (atom false))
 
 (def app
   (-> app*

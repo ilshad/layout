@@ -5,7 +5,7 @@
             [net.cgrand.enlive-html :as html]
             [clojure.test :refer [deftest is are]]
             [ilshad.layout :refer [layout wrap-layout]]
-            [ilshad.layout-test.mock-app-1 :as mock-app-1]))
+            [ilshad.layout-test-mock-app :as mock-app]))
 
 (html/deftemplate template-1
   "template.html"
@@ -51,10 +51,10 @@
 
 (defn run-test-app
   [app f]
-  (let [server (run-jetty app {:port 0 :join? false})
+  (let [server (run-jetty mock-app/app {:port 0 :join? false})
         port (-> server .getConnectors first .getLocalPort)]
-    (def test-port port)  ;; would use with-redefs, but can't test on 1.2
-    (reset! missles-fired? false)
+    (def test-port port)
+    (reset! mock-app/missles-fired? false)
     (try
       (f)
       (finally
