@@ -124,7 +124,7 @@ into layout. There are 2 options how to do this:
    :layout {:prevent true}})
 ```
 
-- or define patterns for URI in middleware (regexp):
+- or define patterns for URI in middleware (vector of regexps):
 
 ```clojure
 (def app
