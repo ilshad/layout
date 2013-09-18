@@ -1,4 +1,4 @@
-# Layout
+# layout
 
 Ring middleware that allows developer to specify base HTML template.
 
