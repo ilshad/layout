@@ -2,7 +2,7 @@
   (:require [ring.util.response :refer [response?]]
             [compojure.response :refer [render]]))
 
-(defn- create-predicate--prevent?
+(defn- create-predicate-prevent?
   [patterns]
   (if (empty? patterns)
     (fn [_] false)
@@ -28,7 +28,7 @@
 (defn wrap-layout
   [handler spec]
   (let [templates (:templates spec {:default spec})
-        prevent? (create-predicate--prevent? (:prevent spec))]
+        prevent? (create-predicate-prevent? (:prevent spec))]
     (fn [req]
       (let [resp (handler req)
             params (:layout resp)]

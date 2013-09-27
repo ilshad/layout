@@ -1,5 +1,5 @@
-(defproject ilshad/layout "0.1.0-SNAPSHOT"
-  :description "Web Layout library"
+(defproject ilshad/layout "0.1.0"
+  :description "HTML Layout library"
   :url "http://github.com/ilshad/layout"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

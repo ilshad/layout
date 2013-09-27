@@ -7,17 +7,17 @@ Ring middleware that allows developer to specify base HTML template.
 Leiningen coordinates:
 
 ```clojure
-[ilshad/layout "x.x.x"]
+[ilshad/layout "0.1.0"]
 ```
-
-!NOTE: yet not released.
 
 ## Simplest option
 
 Define `wrap-layout` middleware for your Ring application:
 
 ```clojure
-(require '[ilshad.layout :refer [wrap-layout]])
+(ns mypapp
+  (:require [ilshad.layout :refer [wrap-layout]]))
+
 ; ... define your compojure routes here
 (def app
   (-> app*
@@ -31,7 +31,8 @@ where `layout-template` is your function (for example, build with
 `enlive-html/deftemplate`):
 
 ```clojure
-(require '[net.cgrand.enlive-html :as html))
+(ns mypapp
+  (:require [net.cgrand.enlive-html :as html]))
 
 (html/deftemplate layout-template "layout.html"
   [request content params]
@@ -51,7 +52,7 @@ where `layout-template` is your function (for example, build with
   [:title] (:title params "Default Title")
 ```
 
-This function is taking 3 arguments:
+This function takes 3 arguments:
 
 - Ring request,
 - Response's body from your Ring handler,
@@ -130,7 +131,7 @@ into layout. There are 2 options how to do this:
 (def app
   (-> app*
       ; ... some middlewares
-      (wrap-layout {:prevent [#"^/static" #"^/api"]
+      (wrap-layout {:prevent [#"/static/" #"/api/"]
                     :templates {:default layout-template}})
 	  ; ... other middlewares
 	  ))
