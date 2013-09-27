@@ -75,7 +75,7 @@ Say we want to add `title` param:
 
 Any custom params (under `:layout`) will be passed into your layout
 template function. Notice, there is 2 reserved keys in the params -
-`:template` and `:prevent`, see below.
+`:templates` and `:prevent`, see below.
 
 ## Named layout templates
 
@@ -161,7 +161,7 @@ Compojure, Hiccup, etc, what how you like.
 
 Middleware `wrap-template` can be used with:
 
-- symbol argument (sole default template);
+- single symbol argument (template function);
 - or map argument (multiple templates and prevent-layout patterns).
 
 Handlers can pass `:layout` slot into response with map. This map can
